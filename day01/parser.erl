@@ -6,8 +6,7 @@ read_file(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
     Lines = read_lines(Device, []),
     file:close(Device),
-    lists:reverse(Lines),
-    Lines.
+    lists:reverse(Lines).
 
 % Helper function to read lines recursively
 read_lines(Device, Accum) ->

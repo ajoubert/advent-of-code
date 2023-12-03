@@ -1,5 +1,8 @@
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell {
-  buildInputs = [ pkgs.erlang ];
+  buildInputs = [ 
+    pkgs.erlang
+    pkgs.entr
+  ];
 }
