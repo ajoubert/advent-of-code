@@ -1,4 +1,4 @@
--module(parser).
+-module(input_parser).
 -export([read_file/1, print_lines/1, print_file/1]).
 
 % Reads a file and stores its contents line by line in a list

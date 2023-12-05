@@ -1,4 +1,4 @@
--module(parser).
+-module(input_parser).
 -export([read_file/1, print_lines/1, print_file/1]).
 
 % Reads a file and stores its contents line by line in a list
@@ -6,7 +6,7 @@ read_file(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
     Lines = read_lines(Device, []),
     file:close(Device),
-    lists:reverse(Lines). % Last line is returned
+    lists:reverse(Lines).
 
 % Helper function to read lines recursively
 read_lines(Device, Accum) ->
