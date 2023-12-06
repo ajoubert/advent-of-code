@@ -7,6 +7,13 @@ then
     exit
 fi
 
+# Checks if no .beam file is present in current directory
+if [ ! -f main.beam ]; then
+  echo "Before running this script, please compile the code with:"
+  echo "./compile.sh"
+  exit 1
+fi
+
 @test "Part 1" {
   run ./run.sh part1 inputs/part1.example.txt
   # Actual output contains carriage returns, this extra line removes them
