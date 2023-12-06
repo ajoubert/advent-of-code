@@ -1,11 +1,25 @@
 {
-  "name": "Erlang",
+  "name": "advent-of-code",
+  "dockerFile": "Dockerfile",
+  "context": "${localWorkspaceFolder}",
   "build": {
-    "dockerfile": "Dockerfile"
+    "args": {
+      "USER_UID": "${localEnv:USER_UID}",
+      "USER_GID": "${localEnv:USER_GID}"
+    }
   },
-  "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
+
+  "runArgs": ["--security-opt", "label=disable"],
+
+  "containerEnv": {
+    "PRELOAD_EXTENSIONS": "arrterian.nix-env-selector"
   },
-  "extensions": ["erlang-ls.erlang-ls"],
-  "remoteUser": "root"
+
+  "overrideCommand": false,
+  "userEnvProbe": "loginShell",
+  "updateRemoteUserUID": false,
+
+  "extensions": ["arrterian.nix-env-selector"],
+
+  "forwardPorts": []
 }

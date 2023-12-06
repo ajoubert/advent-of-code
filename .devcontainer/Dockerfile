@@ -1,1 +1,1 @@
-FROM erlang:latest
+FROM ghcr.io/xtruder/nix-devcontainer:v1
