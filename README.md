@@ -2,7 +2,7 @@
 
 > _Experience is the name everyone gives to their mistakes_ -- **Oscar Wilde**
 
-[![](https://badgen.net/badge/instances/2%2F450/blue?label=⭐%20Stars)](https://adventofcode.com/events)
+[![](https://badgen.net/badge/instances/3%2F450/blue?label=⭐%20Stars)](https://adventofcode.com/events)
 [![](https://badgen.net/badge/icon/Open%20in%20codespaces?icon=github&label)](https://codespaces.new/ajoubert/advent-of-code)
 
 ## Description
@@ -27,10 +27,11 @@ If you do not want to install Nix, read the `shell.nix` file of each day and ins
 
 ## Setup
 
-Each year is in a separate folder, with a `README.md` file describing the language chosen and the setup required to run the code.
+Each year lives in its own top-level folder, with a `README.md` file describing the language chosen and the setup required to run the code.
 
 Within each year, each day is in a separate folder, with a `README.md` file
 describing the challenge. Files containing the inputs are present within the 'inputs' folder of each day and are named 'part1.txt' and 'part2.txt'.
+A `template` folder is also available to easily scaffold new days.
 
 Each day also includes a `shell.nix` file which allows to use Nix to include all required dependencies.
 
