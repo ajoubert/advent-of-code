@@ -1,0 +1,5 @@
+# Ignore README.md in yyyy/dayxx/
+[0-9][0-9][0-9][0-9]/day[0-9][0-9]/README.md
+
+# Ignore full.txt in yyyy/dayxx/inputs/
+[0-9][0-9][0-9][0-9]/day[0-9][0-9]/inputs/full.txt

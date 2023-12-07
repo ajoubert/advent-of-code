@@ -53,3 +53,9 @@ $ ./watch.sh [part1|part2] <inputfile.txt> # Watches for code changes and re-com
 Each module includes a `test.sh` script, but some languages may provide
 a better way to run tests. See the `README.md` file of each year for more
 information on the testing strategy for each language.
+
+## Encrypted content
+
+Due to the rules of the challenge, I cannot share the content of the puzzle
+nor the full input file. Hence I only include an encrypted version of them
+for my own convenience.
