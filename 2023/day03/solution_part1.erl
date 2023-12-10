@@ -1,89 +1,98 @@
 -module(solution_part1).
 -export([solve/1]).
-%-define(DOT_UNICODE, 46). % 46 is the unicode value for a dot
 
 solve(Lines) ->
-    [Coordinates, FoundNumbers, MaxX, MaxY] = parse_lines(Lines, 1, [#{}, #{}]),
-    Result = get_valid_sum(Coordinates, FoundNumbers, MaxX, MaxY),
+    [Coordinates, FoundNumbers] = parse_lines(Lines, 1, [#{}, #{}]),
+    Result = get_valid_sum(Coordinates, FoundNumbers, length(lists:nth(1, Lines))-1, length(Lines)),
     erlang:display(Result),
     Lines.
 
 % Transform the unusable input into two maps of the following format:
-% #{ {X, Y} => Char }, #{ id => [Number, {StartX, EndX, Y}] }
+% Coordinates: #{ {X, Y} => Char }
 % where X and Y are the coordinates of the map and Char is the character
 % coordinates
-% and id is the identifier for a number (good enough as y--x which should
-% be unique), Number is the identified number, StartX and EndX are the
-% X positions of that number
-% to get a specific coordinate, use maps:get({X, Y}, Map)
+% FoundNumbers: #{ id => [Number, {StartX, EndX, Y}] }
+% where id is the identifier for a number (Y--StartX is good enough),
+% Number is the identified number, StartX and EndX are the X positions of
+% the number, Y is its Y position
 parse_lines(Lines, Y, [Coordinates, FoundNumbers]) ->
     if (Y > length(Lines)) ->
-        % MaxX is at -1 due to the extra \n at the end of each line
-        [Coordinates, FoundNumbers, length(lists:nth(1, Lines))-1, length(Lines)];
+        [Coordinates, FoundNumbers];
     true ->
        [NewCoordinates, NewFoundNumbers] = parse_line(lists:nth(Y, Lines), Y, [Coordinates, FoundNumbers]),
        parse_lines(Lines, Y + 1, [NewCoordinates, NewFoundNumbers])
     end.
 
+% Goal here is to update teh Coordinates and FoundNumbers maps for the
+% current line
 parse_line(LineWithEndline, Y, [Coordinates, FoundNumbers]) ->
-    % Get current Line and displays it for debug
+    % All lines end with a newline character, so we need to remove it
     Line = string:strip(LineWithEndline, right, $\n),
-
-    ParsedInfo = handle_char(Line, {Y, 1}, #{}),
-    NewCoordinates = maps:merge(Coordinates, maps:get(coordinates, ParsedInfo)),
-    NewFoundNumbers = maps:merge(FoundNumbers, maps:get(numbers, ParsedInfo, #{})),
+    % Get the `ParsedInfos` object for the current line (see method for
+    % details)
+    ParsedInfos = handle_char(Line, {Y, 1}, #{}),
+    % Merge the output of the parsing with the current Coordinates and
+    % FoundNumbers maps
+    NewCoordinates = maps:merge(Coordinates, maps:get(coordinates, ParsedInfos)),
+    NewFoundNumbers = maps:merge(FoundNumbers, maps:get(numbers, ParsedInfos, #{})),
+    % We're done, return and move onto the next line
     [NewCoordinates, NewFoundNumbers].
 
-%ParsedInfo = #{numbers => #{}, currentlyParsingNumber => #{}, coordinates => #{}},
-handle_char(Line, {Y, X}, ParsedInfo) ->
+% This method's purpose is to generate the ParsedInfo object which contains:
+% - coordinates: a map of the coordinates of the current line
+% - numbers: a map of the numbers found on the current line
+% - currentlyParsingNumber: a map of the number currently being parsed
+% CurrentlyParsingNumber is used to keep track of the number being parsed
+% as we move from digit to digit
+handle_char(Line, {Y, X}, ParsedInfos) ->
     if (X > length(Line)) ->
         % If we are still parsing a number, complete it
         % else do nothing
-        CurrentlyParsing = maps:get(currentlyParsingNumber, ParsedInfo, #{}),
-        ID = maps:get(id, CurrentlyParsing, "none"),
-        case ID of
-            "none" -> ParsedInfo;
+        CurrentlyParsing = maps:get(currentlyParsingNumber, ParsedInfos, #{}),
+        Id = maps:get(id, CurrentlyParsing, "none"),
+        case Id of
+            "none" -> ParsedInfos;
             _ ->
-                Id = maps:get(id, CurrentlyParsing),
                 Number = maps:get(number, CurrentlyParsing),
                 StartX = maps:get(startX, CurrentlyParsing),
+                AlreadyParsedToExtend = maps:get(numbers, ParsedInfos, #{}),
                 EndX = X - 1,
-                NewNumbers = maps:put(Id, [Number, {StartX, EndX, Y}], maps:get(numbers, ParsedInfo, #{})),
-                NewParsedInfo = maps:put(numbers, NewNumbers, ParsedInfo),
+                NewNumbers = maps:put(Id, [Number, {StartX, EndX, Y}], AlreadyParsedToExtend),
+                NewParsedInfo = maps:put(numbers, NewNumbers, ParsedInfos),
                 NewParsedInfo
         end;
     true ->
         Char = lists:nth(X, Line),
-        NewCoordinates = maps:put({X, Y}, Char, maps:get(coordinates, ParsedInfo, #{})),
+        % First let's update the coordinates map
+        NewCoordinates = maps:put({X, Y}, Char, maps:get(coordinates, ParsedInfos, #{})),
         OnlyCoordinatesInfo = maps:put(coordinates, NewCoordinates, #{}),
-        % check if Chat is a number
-        % if it is, print it
-        Numbers = maps:get(numbers, ParsedInfo, #{}),
-        CurrentlyParsing = maps:get(currentlyParsingNumber, ParsedInfo, #{}),
+
+        % Now let's update the other two maps
         case Char of
-            $0 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $1 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $2 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $3 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $4 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $5 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $6 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $7 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $8 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            $9 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char);
-            _ -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_not_number([Y, X], [Numbers, CurrentlyParsing])
+            $0 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $1 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $2 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $3 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $4 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $5 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $6 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $7 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $8 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            $9 -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_number([Y, X], ParsedInfos, Char);
+            _ -> [NewNumbers, NewCurrentlyParsing] = handle_char_is_not_number([Y, X], ParsedInfos)
         end,
         NumbersAndCoordinatesInfo = maps:put(numbers, NewNumbers, OnlyCoordinatesInfo),
         NewParsedInfo = maps:put(currentlyParsingNumber, NewCurrentlyParsing, NumbersAndCoordinatesInfo),
+        % Moving onto the next character
         handle_char(Line, {Y, X + 1}, NewParsedInfo)
     end.
 
-% #{ id => [Number, {StartX, EndX, Y}] }
-% # [NumberSoFar, [StartX, CurrentX, Y], id]
-handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char) ->
-    %io:format("Found number at ~p~n", [X]),
-    % if currently parsing a number, add to it
-    % else start parsing a new number
+% If the character is a number, either we create the currentlyParsingNumber
+% or we update it
+handle_char_is_number([Y, X], ParsedInfos, Char) ->
+    Numbers = maps:get(numbers, ParsedInfos, #{}),
+    CurrentlyParsing = maps:get(currentlyParsingNumber, ParsedInfos, #{}),
+    % Case where we start parsing a new number
     if CurrentlyParsing == #{} ->
         Id = integer_to_list(Y) ++ "--" ++ integer_to_list(X),
         NewCurrentlyParsing = #{
@@ -92,6 +101,7 @@ handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char) ->
                                 startX=> X,
                                 y=> Y
                                };
+    % Case where we continue parsing the current number
     true ->
         CurrentNumber = maps:get(number, CurrentlyParsing, []),
         NewNumber = CurrentNumber ++ [Char],
@@ -99,9 +109,11 @@ handle_char_is_number([Y, X], [Numbers, CurrentlyParsing], Char) ->
     end,
     [Numbers, NewCurrentlyParsing].
 
-handle_char_is_not_number([Y, X], [Numbers, CurrentlyParsing]) ->
-    % if currently parsing a number, complete it
-    % else do nothing
+% If the character isn't a number, either we complete the
+% currentlyParsingNumber into a found number, or we do nothing
+handle_char_is_not_number([Y, X], ParsedInfos) ->
+    Numbers = maps:get(numbers, ParsedInfos, #{}),
+    CurrentlyParsing = maps:get(currentlyParsingNumber, ParsedInfos, #{}),
     if CurrentlyParsing == #{} ->
         [Numbers, CurrentlyParsing];
     true ->
@@ -113,16 +125,22 @@ handle_char_is_not_number([Y, X], [Numbers, CurrentlyParsing]) ->
         [NewNumbers, #{}]
     end.
 
+% Now that we have two maps we can work with, let's find the sum
+% as it's the goal of the exercise after all
 get_valid_sum(Coordinates, FoundNumbers, MaxX, MaxY) ->
     NumbersIds = maps:keys(FoundNumbers),
     ValidNumbers = lists:map(fun(Id) ->
         Number = maps:get(Id, FoundNumbers),
-        validate_number(Number, Coordinates, MaxX, MaxY)
+        list_valid_numbers(Number, Coordinates, MaxX, MaxY)
     end, NumbersIds),
+    % Let's return the sum of valid numbers
     lists:foldl(fun(X, Acc) -> X + Acc end, 0, ValidNumbers).
 
 
-validate_number([Number, {StartX, EndX, Y}], Coordinates, MaxX, MaxY) ->
+% This is where the actual check of the exercise is done. If the number is
+% surrounded by any single non-dot non-number character, it is considered
+% valid and be added to the list
+list_valid_numbers([Number, {StartX, EndX, Y}], Coordinates, MaxX, MaxY) ->
     % First let's build a list of coordinates to check
     case StartX of 
         1 -> StartXCheck = 1;
@@ -168,11 +186,9 @@ validate_number([Number, {StartX, EndX, Y}], Coordinates, MaxX, MaxY) ->
         end
     end, CoordinatesToCheck),
 
-    % If there are no valid coordinates, return 0
     if ValidCoordinates == [] ->
         Result = 0;
     true ->
-        % Else return the number
         {Result, _} = string:to_integer(Number)
     end,
     Result.
