@@ -4,4 +4,5 @@ For the 2023 edition of advent of code, I will be trying to learn [erlang](https
 
 - [Day 1](./day01/README.md)
 - [Day 2](./day02/README.md)
+- [Day 3](./day03/README.md)
 - ... to be continued
