@@ -2,7 +2,7 @@
 
 > _Experience is the name everyone gives to their mistakes_ -- **Oscar Wilde**
 
-[![](https://badgen.net/badge/instances/5%2F450/blue?label=⭐%20Stars)](https://adventofcode.com/events)
+[![](https://badgen.net/badge/instances/6%2F450/blue?label=⭐%20Stars)](https://adventofcode.com/events)
 [![](https://badgen.net/badge/icon/Open%20in%20codespaces?icon=github&label)](https://codespaces.new/ajoubert/advent-of-code)
 
 ## Description

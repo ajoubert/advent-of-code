@@ -23,9 +23,9 @@ fi
   [ "$result" = "4361" ]
 }
 
-# @test "Part 2" {
-#   run ./run.sh part2 inputs/part2.example.txt
-#   result=$(echo $output | tr -d '\r')
-#   [ "$status" -eq 0 ]
-#   [ "$result" = "VALUE_HERE" ]
-# }
+@test "Part 2" {
+  run ./run.sh part2 inputs/part2.example.txt
+  result=$(echo $output | tr -d '\r')
+  [ "$status" -eq 0 ]
+  [ "$result" = "467835" ]
+}

@@ -13,4 +13,4 @@ part2 (Args) ->
     FileName = hd (Args),
     Lines = input_parser:read_file(FileName),
     Result = solution_part2:solve(Lines),
-    erlang:display(Result).
+    Result.
